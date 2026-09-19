@@ -242,17 +242,21 @@
   #tooltip .tt-map-wrap { width: 220px; }
   #tooltip .tt-map-wrap .india-map-img { width: 220px; }
 
-  /* era hero images — fixed height + object-fit:cover so every era-hero photo
-     and every kcard inline photo renders at the same visual size regardless
-     of its source image's natural aspect ratio (previously only width was
-     constrained, so a tall source photo and a wide one displayed at very
-     different heights next to each other). */
+  /* era hero images — fixed height so every era-hero photo and every kcard
+     inline photo renders at the same visual size regardless of its source
+     image's natural aspect ratio (previously only width was constrained, so
+     a tall source photo and a wide one displayed at very different heights
+     next to each other). object-fit:contain (not cover) deliberately —
+     several of these are tall/portrait subjects (e.g. the Sarnath Lion
+     Capital pillar), and `cover` was cropping off the actual subject to fill
+     the box; `contain` letterboxes instead, which keeps the whole photo
+     visible while still keeping every box the same size. */
   .era-image {
     display: block;
     width: 100%;
     max-width: 420px;
     height: 220px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 8px;
     margin: 10px 0 18px;
     border: 1px solid var(--border);

@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian History: Kingdoms &amp; Rulers Timeline</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --card-bg:        #ffffff;
+    --series-blue:    #2a78d6;
+    --series-orange:  #eb6834;
+    --series-aqua:    #1baf7a;
+    --series-yellow:  #eda100;
+    --series-magenta: #e87ba4;
+    --series-green:   #008300;
+    --series-violet:  #4a3aa7;
+    --series-red:     #e34948;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --card-bg:        #232322;
+      --series-blue:    #3987e5;
+      --series-orange:  #d95926;
+      --series-aqua:    #199e70;
+      --series-yellow:  #c98500;
+      --series-magenta: #d55181;
+      --series-green:   #008300;
+      --series-violet:  #9085e9;
+      --series-red:     #e66767;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:            #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --card-bg:        #232322;
+    --series-blue:    #3987e5;
+    --series-orange:  #d95926;
+    --series-aqua:    #199e70;
+    --series-yellow:  #c98500;
+    --series-magenta: #d55181;
+    --series-green:   #008300;
+    --series-violet:  #9085e9;
+    --series-red:     #e66767;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body.viz-root {
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 100px; }
+  h1 { font-size: 1.7rem; margin: 0 0 8px; }
+  h2.era-title {
+    font-size: 1.3rem;
+    margin: 56px 0 4px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gridline);
+    color: var(--text-primary);
+  }
+  .era-sub { color: var(--text-secondary); font-size: 0.95rem; margin: 0 0 18px; }
+  p.lede { color: var(--text-secondary); font-size: 1rem; }
+  .callout {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--series-blue);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 18px 0 28px;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  .callout b { color: var(--text-primary); }
+
+  /* theme toggle */
+  .toggle-btn {
+    position: fixed; top: 16px; right: 16px;
+    background: var(--card-bg); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 6px 14px; font-size: 0.85rem; cursor: pointer;
+    z-index: 50;
+  }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 18px 0 28px; font-size: 0.85rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; flex: none; }
+
+  /* master gantt */
+  .gantt-scroll {
+    /* overflow-y is deliberately explicit (not left at its default `visible`) —
+       WebKit's handling of an ambiguous vertical axis on an overflow-x:auto
+       container was silently swallowing vertical wheel/trackpad scroll for the
+       whole page whenever the cursor was over this box. Safe here because this
+       element has no fixed height of its own — it just grows to fit its
+       content — so nothing ever actually overflows it vertically to begin with. */
+    overflow-x: auto; overflow-y: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-1);
+  }
+  .gantt {
+    position: relative;
+    height: 3200px;
+    margin: 0 0 0 90px;
+    width: 900px;
+    border-left: 1px solid var(--baseline);
+  }
+  .gantt-outer { position: relative; padding: 20px 20px 20px 0; }
+  .axis-label {
+    position: absolute; left: -90px; width: 82px; text-align: right;
+    font-size: 0.72rem; color: var(--text-muted);
+    transform: translateY(-6px);
+    padding-right: 8px;
+    border-top: 1px dashed var(--gridline);
+  }
+  /* height:3200px mirrors .gantt's own (also hardcoded) height, deliberately
+     NOT expressed as height:100% — a percentage height on an absolutely-
+     positioned element nested this way, inside overflow-x:auto, triggers a
+     genuine WebKit bug that silently swallows vertical wheel/trackpad scroll
+     for the whole page whenever the cursor is over this box. Confirmed via a
+     from-scratch bisection with zero JavaScript involved. */
+  .lane { position: absolute; top: 0; height: 3200px; width: 108px; }
+  .bar {
+    position: absolute; left: 2px; right: 2px;
+    border-radius: 4px;
+    font-size: 0.66rem;
+    color: #fff;
+    padding: 3px 5px;
+    overflow: hidden;
+    line-height: 1.15;
+    box-shadow: 0 0 0 1px var(--page);
+    min-height: 10px;
+  }
+  .bar b { display: block; font-size: 0.7rem; }
+  .bar span.yrs { opacity: 0.85; font-size: 0.62rem; }
+  .bar { cursor: pointer; transition: filter 0.1s, outline 0.1s; }
+  .bar:hover, .bar:focus-visible { filter: brightness(1.12); outline: 2px solid var(--text-primary); outline-offset: 1px; z-index: 5; }
+  /* While actively scrolling, bars sliding under a stationary cursor would otherwise
+     fire native :hover state changes (and their filter/outline transition) on every
+     bar boundary crossed — pure CSS churn that causes scroll jank on its own,
+     independent of any JS mouseenter handling. Disabling pointer-events during
+     scroll stops that at the source. */
+  .gantt.is-scrolling .bar { pointer-events: none; transition: none; }
+
+  /* hover info box */
+  #tooltip {
+    position: fixed;
+    width: 620px;
+    max-width: min(620px, 94vw);
+    max-height: calc(100vh - 16px);
+    overflow-y: auto;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 100;
+  }
+  #tooltip.visible { opacity: 1; transform: translateY(0); }
+  #tooltip .tt-layout { display: flex; flex-wrap: wrap; gap: 16px; padding: 14px 16px 16px; border-left: 4px solid var(--series-blue); border-radius: 10px; }
+  #tooltip .tt-left { flex: 1 1 300px; min-width: 240px; }
+  #tooltip .tt-right { flex: 0 0 220px; width: 220px; display: flex; flex-direction: column; gap: 10px; }
+  #tooltip .tt-img { width: 220px; height: 170px; object-fit: contain; display: block; background: var(--gridline); border-radius: 8px; }
+  #tooltip .tt-title { font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
+  #tooltip .tt-dates { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 8px; }
+  #tooltip .tt-blurb { color: var(--text-secondary); margin-bottom: 10px; }
+  #tooltip .tt-capital { color: var(--text-secondary); font-size: 0.8rem; margin: -4px 0 10px; }
+  #tooltip .tt-capital b { color: var(--text-primary); }
+  #tooltip .tt-facts { margin: 0 0 12px; padding-left: 17px; font-size: 0.8rem; color: var(--text-secondary); }
+  #tooltip .tt-facts li { margin-bottom: 4px; }
+  #tooltip .tt-notable { margin: 0 0 12px; padding-left: 0; list-style: none; }
+  #tooltip .tt-notable li { margin-bottom: 6px; font-size: 0.8rem; color: var(--text-secondary); }
+  #tooltip .tt-notable b { color: var(--text-primary); }
+  #tooltip .tt-boundary-img { width: 220px; display: block; border-radius: 8px; border: 1px solid var(--border); background: var(--gridline); }
+  #tooltip .tt-map-cap { font-size: 0.65rem; color: var(--text-muted); margin-top: -4px; }
+  #tooltip .tt-map-cap a { color: var(--text-muted); }
+  #tooltip .tt-section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); margin-bottom: 5px; }
+  #tooltip .tt-track { position: relative; height: 12px; border-radius: 6px; background: var(--gridline); margin-bottom: 8px; overflow: hidden; }
+  #tooltip .tt-seg { position: absolute; top: 0; height: 100%; min-width: 3px; border-radius: 6px; box-shadow: 0 0 0 1px var(--card-bg); }
+  #tooltip .tt-ruler-list { display: flex; flex-direction: column; gap: 4px; }
+  #tooltip .tt-ruler-row { display: flex; align-items: baseline; gap: 6px; font-size: 0.76rem; }
+  #tooltip .tt-ruler-dot { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+  #tooltip .tt-ruler-name { color: var(--text-primary); font-weight: 600; }
+  #tooltip .tt-ruler-yrs { color: var(--text-muted); font-size: 0.7rem; margin-left: auto; white-space: nowrap; }
+  #tooltip .tt-no-rulers { color: var(--text-muted); font-size: 0.76rem; font-style: italic; }
+
+  /* India region map (reference + per-empire tooltip) */
+  .india-map-wrap { position: relative; display: inline-block; }
+  .india-map-img { display: block; filter: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .india-map-img { filter: invert(1); }
+  }
+  :root[data-theme="dark"] .india-map-img { filter: invert(1); }
+  .map-zone { position: absolute; border-radius: 5px; }
+  .map-zone.highlight { opacity: 0.55; box-shadow: 0 0 0 1px rgba(0,0,0,0.15); }
+  .map-pin {
+    position: absolute; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--card-bg); border: 1.5px solid var(--text-primary);
+    color: var(--text-primary); font-size: 0.68rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    transform: translate(-50%, -50%);
+  }
+  .map-ref-block { margin: 8px 0 28px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .map-ref-caption { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px; max-width: 560px; }
+  .map-ref-legend { list-style: none; margin: 0; padding: 0; font-size: 0.85rem; color: var(--text-secondary); display: grid; gap: 6px; }
+  .map-ref-legend li { display: flex; align-items: center; gap: 8px; }
+  .map-ref-legend .num {
+    width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--text-primary);
+    color: var(--text-primary); font-size: 0.65rem; font-weight: 700; flex: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #tooltip .tt-map-wrap { width: 220px; }
+  #tooltip .tt-map-wrap .india-map-img { width: 220px; }
+
+  /* era hero images */
+  .era-image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 8px;
+    margin: 10px 0 18px;
+    border: 1px solid var(--border);
+  }
+  .era-image-wrap { margin: 10px 0 18px; }
+  .era-image-cap { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+  .era-image-cap a { color: var(--text-muted); }
+
+  /* kingdom cards */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 8px; }
+  .kcard {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-top: 4px solid var(--series-blue);
+  }
+  .kcard h3 { margin: 0 0 2px; font-size: 1.05rem; }
+  .kcard .dates { color: var(--text-muted); font-size: 0.82rem; margin-bottom: 10px; }
+  .kcard .rulers { margin: 0 0 10px; padding-left: 18px; font-size: 0.9rem; }
+  .kcard .rulers li { margin-bottom: 6px; }
+  .kcard .rulers b { color: var(--text-primary); }
+  .kcard .famous { font-size: 0.85rem; color: var(--text-secondary); margin: 0; padding-left: 18px; }
+  .kcard .famous li { margin-bottom: 3px; }
+  .kcard .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); margin: 10px 0 2px; }
+
+  footer { margin-top: 60px; color: var(--text-muted); font-size: 0.8rem; border-top: 1px solid var(--gridline); padding-top: 16px; }
+</style>
+</head>
+<body class="viz-root">
+<button class="toggle-btn" onclick="document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark')">🌓 Toggle theme</button>
+
+<div class="wrap">
+  <h1>Indian History: Kingdoms &amp; Rulers, Oldest to Newest</h1>
+  <p class="lede">A chronological map of the major Indian dynasties from the Indus Valley Civilization to Independence — with a timeline showing which kingdoms overlapped, followed by details on key rulers and what each kingdom is remembered for.</p>
+
+  <div class="callout">
+    <b>Quick correction on the starting point:</b> Chandragupta I was not the first Indian ruler — he founded the <b>Gupta Empire</b> around 320 CE, which is actually quite late in this story (roughly two-thirds of the way through). You may be thinking of <b>Chandragupta Maurya</b>, a completely different person nearly 650 years earlier, who founded the <b>Maurya Empire</b> in 322 BCE and is usually taught as the first ruler to unify most of India under one crown. Before him there were centuries of the Vedic period and, before that, the Indus Valley Civilization — which had cities and trade but no named rulers we know of (its script is still undeciphered). This page starts at the very beginning and marks both Chandraguptas clearly so you never mix them up again.
+  </div>
+
+  <div class="legend" id="legend">
+    <div class="legend-item"><span class="swatch" style="background:var(--series-violet)"></span>Ancient / pre-Maurya (Indus Valley, Vedic, minor Mahajanapadas)</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-blue)"></span>Dominant / best-known power of the era</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-orange)"></span>Deccan / Central India dynasties</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-aqua)"></span>South India (Tamil &amp; Kannada) dynasties</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-yellow)"></span>Northwest &amp; Central Asian-origin dynasties</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-magenta)"></span>Eastern India (Bengal/Bihar)</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-green)"></span>North/West regional powers</div>
+    <div class="legend-item"><span class="swatch" style="background:var(--series-red)"></span>Colonial period (British)</div>
+  </div>
+
+  <div class="map-ref-block">
+    <p class="map-ref-caption">Hover any bar to see where a kingdom ruled. For ~15 well-documented empires (Maurya, Gupta, Mughal, Chola, Vijayanagara, British Raj, etc.), the info box shows an actual sourced historical extent map. For ancient and minor kingdoms with no precisely attested borders — most of the Mahajanapadas, the Vedic polities — it instead highlights one of these rough geographic zones, clearly labeled "approximate region" so it's never mistaken for a real boundary.</p>
+    <div class="india-map-wrap" id="refMap" style="width:260px;">
+      <img class="india-map-img" style="width:260px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/India_outline.svg?width=260" alt="Outline map of India used as a reference for kingdom regions" loading="eager">
+    </div>
+    <ol class="map-ref-legend" id="refLegend"></ol>
+  </div>
+
+  <h2 class="era-title" style="margin-top:0; border-top:none; padding-top:0;">Master Timeline — who ruled when (2500 BCE – 1947 CE)</h2>
+  <p class="era-sub">Scroll down the timeline; scroll sideways if bars run off-screen on a small window. Each column is a "lane" — kingdoms sharing a lane never overlapped in time; kingdoms in different lanes at the same height were ruling simultaneously.</p>
+
+  <div class="gantt-scroll">
+    <div class="gantt-outer">
+      <div class="gantt">
+        <!-- axis labels -->
+        <div class="axis-label" style="top:0%">2500 BCE — Indus Valley begins</div>
+        <div class="axis-label" style="top:13.5%">1900 BCE — IVC decline</div>
+        <div class="axis-label" style="top:22.5%">1500 BCE — Vedic period begins</div>
+        <div class="axis-label" style="top:42.7%">600 BCE — Mahajanapadas</div>
+        <div class="axis-label" style="top:49.0%">322 BCE — Maurya Empire</div>
+        <div class="axis-label" style="top:52.1%">185 BCE — post-Mauryan split</div>
+        <div class="axis-label" style="top:63.4%">320 CE — Gupta golden age</div>
+        <div class="axis-label" style="top:69.8%">606 CE — Harsha</div>
+        <div class="axis-label" style="top:73.1%">750 CE — Tripartite struggle</div>
+        <div class="axis-label" style="top:83.3%">1206 CE — Delhi Sultanate</div>
+        <div class="axis-label" style="top:90.5%">1526 CE — Mughal Empire</div>
+        <div class="axis-label" style="top:95.7%">1757 CE — British rule begins</div>
+        <div class="axis-label" style="top:100%">1947 — Independence</div>
+
+        <!-- lane 0: main line of dominant power -->
+        <div class="lane" style="left:0px">
+          <div class="bar" tabindex="0" style="top:0%; height:13.5%; background:var(--series-violet)" data-name="Indus Valley Civilization" data-dates="c. 2500 – 1900 BCE" data-ruler="No named rulers known" data-fact="World's earliest known covered drainage systems; undeciphered script."><b>Indus Valley Civ.</b><span class="yrs">2500–1900 BCE</span></div>
+          <div class="bar" tabindex="0" style="top:22.5%; height:11.2%; background:var(--series-violet)" data-name="Vedic Period — Kuru Kingdom" data-dates="c. 1500 – 1000 BCE" data-ruler="King Parikshit" data-fact="Setting of the Mahabharata; compilation of the Vedas."><b>Vedic (Kuru-Panchala)</b><span class="yrs">1500–1000 BCE</span></div>
+          <div class="bar" tabindex="0" style="top:33.7%; height:9.0%; background:var(--series-violet)" data-name="Later Vedic Janapadas (Videha, Kosala)" data-dates="c. 1000 – 600 BCE" data-ruler="King Janaka of Videha" data-fact="Rise of philosophical debate that fed into the Upanishads."><b>Later Vedic Janapadas</b><span class="yrs">1000–600 BCE</span></div>
+          <div class="bar" tabindex="0" style="top:42.7%; height:5.8%; background:var(--series-blue)" data-name="Magadha" data-dates="c. 600 – 345 BCE" data-ruler="Bimbisara, Ajatashatru" data-fact="Springboard for the Nanda and Maurya Empires; era of the Buddha and Mahavira."><b>Magadha</b><span class="yrs">600–345 BCE</span></div>
+          <div class="bar" tabindex="0" style="top:48.5%; height:0.5%; background:var(--series-blue)" data-name="Nanda Dynasty" data-dates="c. 345 – 322 BCE" data-ruler="Mahapadma Nanda" data-fact="First ruler to unify nearly all of northern India."></div>
+          <div class="bar" tabindex="0" style="top:49.0%; height:3.1%; background:var(--series-blue)" data-name="Maurya Empire" data-dates="322 – 185 BCE" data-ruler="Chandragupta Maurya, Bindusara, Ashoka" data-fact="First empire to cover almost the whole subcontinent."><b>Maurya Empire</b></div>
+          <div class="bar" tabindex="0" style="top:52.1%; height:2.5%; background:var(--series-blue)" data-name="Shunga Dynasty" data-dates="185 – 73 BCE" data-ruler="Pushyamitra Shunga" data-fact="Sanskrit revival; added to the Sanchi Stupa."><b>Shunga</b></div>
+          <div class="bar" tabindex="0" style="top:54.6%; height:1.0%; background:var(--series-blue)" data-name="Kanva Dynasty" data-dates="73 – 28 BCE" data-ruler="Vasudeva Kanva" data-fact="Brief successor to the Shungas in north India."></div>
+          <div class="bar" tabindex="0" style="top:63.4%; height:5.2%; background:var(--series-blue)" data-name="Gupta Empire" data-dates="320 – 550 CE" data-ruler="Chandragupta I, Samudragupta, Chandragupta II" data-fact="India's 'Golden Age' — science, art, and literature flourish."><b>Gupta Empire</b><span class="yrs">320–550 CE</span></div>
+          <div class="bar" tabindex="0" style="top:69.8%; height:1.0%; background:var(--series-blue)" data-name="Vardhana Dynasty" data-dates="606 – 647 CE" data-ruler="Harshavardhana" data-fact="Briefly reunified north India; hosted the pilgrim Xuanzang."><b>Harsha</b></div>
+          <div class="bar" tabindex="0" style="top:83.3%; height:7.2%; background:var(--series-blue)" data-name="Delhi Sultanate" data-dates="1206 – 1526 CE" data-ruler="Qutb-ud-din Aibak, Alauddin Khalji, Muhammad bin Tughlaq, Ibrahim Lodi" data-fact="First sustained Muslim rule in north India, five dynasties."><b>Delhi Sultanate</b><span class="yrs">1206–1526</span></div>
+          <div class="bar" tabindex="0" style="top:90.5%; height:7.5%; background:var(--series-blue)" data-name="Mughal Empire" data-dates="1526 – 1857 CE" data-ruler="Babur, Akbar, Shah Jahan, Aurangzeb" data-fact="Built the Taj Mahal; last great pre-colonial empire."><b>Mughal Empire</b><span class="yrs">1526–1857</span></div>
+        </div>
+
+        <!-- lane 1 -->
+        <div class="lane" style="left:110px">
+          <div class="bar" tabindex="0" style="top:52.2%; height:3.8%; background:var(--series-yellow)" data-name="Indo-Greek Kingdom" data-dates="c. 180 – 10 BCE" data-ruler="Menander I (Milinda)" data-fact="Greco-Buddhist art — the earliest Buddha statues, in Greek style."><b>Indo-Greek</b></div>
+          <div class="bar" tabindex="0" style="top:56.9%; height:7.7%; background:var(--series-yellow)" data-name="Kushan Empire" data-dates="c. 30 – 375 CE" data-ruler="Kanishka the Great" data-fact="Connected India into Silk Road trade with China, Persia, and Rome."><b>Kushan Empire</b></div>
+          <div class="bar" tabindex="0" style="top:95.7%; height:4.3%; background:var(--series-red)" data-name="British Raj / East India Company" data-dates="1757 – 1947 CE" data-ruler="Robert Clive; later the Crown" data-fact="Began at the Battle of Plassey (1757); ended with Independence (1947)."><b>British Raj / Co.</b><span class="yrs">1757–1947</span></div>
+        </div>
+
+        <!-- lane 2 -->
+        <div class="lane" style="left:220px">
+          <div class="bar" tabindex="0" style="top:51.1%; height:10.1%; background:var(--series-orange)" data-name="Satavahana Dynasty" data-dates="c. 230 BCE – 220 CE" data-ruler="Gautamiputra Satakarni" data-fact="Nearly 450 years long; controlled Deccan trade routes."><b>Satavahana</b></div>
+          <div class="bar" tabindex="0" style="top:61.8%; height:5.7%; background:var(--series-orange)" data-name="Vakataka Dynasty" data-dates="c. 250 – 500 CE" data-ruler="—" data-fact="Deccan power that intermarried with the Guptas."><b>Vakataka</b></div>
+          <div class="bar" tabindex="0" style="top:68.4%; height:4.7%; background:var(--series-orange)" data-name="Chalukyas of Badami" data-dates="543 – 753 CE" data-ruler="Pulakeshin II" data-fact="Handed Harsha a rare defeat, keeping the Deccan independent."><b>Chalukya (Badami)</b></div>
+          <div class="bar" tabindex="0" style="top:73.2%; height:5.1%; background:var(--series-orange)" data-name="Rashtrakuta Dynasty" data-dates="753 – 982 CE" data-ruler="Krishna I" data-fact="Built the Kailasa Temple at Ellora, carved from a single rock."><b>Rashtrakuta</b></div>
+          <div class="bar" tabindex="0" style="top:78.1%; height:4.9%; background:var(--series-orange)" data-name="Western Chalukyas (Kalyani)" data-dates="973 – 1189 CE" data-ruler="—" data-fact="Succeeded the Rashtrakutas in the Deccan."><b>W. Chalukya</b></div>
+          <div class="bar" tabindex="0" style="top:86.3%; height:6.9%; background:var(--series-orange)" data-name="Vijayanagara Empire" data-dates="1336 – 1646 CE" data-ruler="Krishnadevaraya" data-fact="Last great Hindu empire; capital at Hampi."><b>Vijayanagara</b></div>
+          <div class="bar" tabindex="0" style="top:93.9%; height:3.2%; background:var(--series-orange)" data-name="Maratha Empire" data-dates="1674 – 1818 CE" data-ruler="Shivaji Maharaj" data-fact="Guerrilla-warfare kingdom that grew to dominate most of India by the 1700s."><b>Maratha Empire</b></div>
+        </div>
+
+        <!-- lane 3 -->
+        <div class="lane" style="left:330px">
+          <div class="bar" tabindex="0" style="top:42.7%; height:3.4%; background:var(--series-violet)" data-name="Vatsa" data-dates="c. 600 – 450 BCE" data-ruler="Udayana" data-fact="Capital Kaushambi; later a major trade and pilgrimage city."><b>Vatsa</b></div>
+          <div class="bar" tabindex="0" style="top:72.6%; height:6.9%; background:var(--series-green)" data-name="Pratihara (Gurjara-Pratihara) Dynasty" data-dates="c. 730 – 1036 CE" data-ruler="Mihira Bhoja" data-fact="Peaked under Mihira Bhoja; fought the Tripartite Struggle over Kannauj."><b>Pratihara</b></div>
+          <div class="bar" tabindex="0" style="top:96.7%; height:1.1%; background:var(--series-green)" data-name="Sikh Empire" data-dates="1799 – 1849 CE" data-ruler="Maharaja Ranjit Singh" data-fact="Unified the Sikh misls; last major independent kingdom to fall to the British."><b>Sikh Empire</b></div>
+        </div>
+
+        <!-- lane 4 -->
+        <div class="lane" style="left:440px">
+          <div class="bar" tabindex="0" style="top:54.0%; height:11.2%; background:var(--series-yellow)" data-name="Indo-Scythians (Sakas)" data-dates="c. 100 BCE – 400 CE" data-ruler="—" data-fact="Central Asian warriors ruling western India; the 'Saka Era' calendar is named after them."><b>Indo-Scythians</b></div>
+          <div class="bar" tabindex="0" style="top:73.1%; height:9.2%; background:var(--series-magenta)" data-name="Pala Dynasty" data-dates="750 – 1161 CE" data-ruler="Dharmapala" data-fact="Major Buddhist patrons; founded Vikramashila university."><b>Pala Dynasty</b></div>
+        </div>
+
+        <!-- lane 5 -->
+        <div class="lane" style="left:550px">
+          <div class="bar" tabindex="0" style="top:49.5%; height:13.5%; background:var(--series-aqua)" data-name="Sangam-Age Tamil Kingdoms (Chera, Chola, Pandya)" data-dates="c. 300 BCE – 300 CE" data-ruler="Various" data-fact="Produced Sangam literature; ran spice trade with Rome."><b>Sangam Tamil Kingdoms</b></div>
+          <div class="bar" tabindex="0" style="top:68.6%; height:7.8%; background:var(--series-aqua)" data-name="Pallava Dynasty" data-dates="c. 550 – 897 CE" data-ruler="Narasimhavarman I" data-fact="Built the rock-cut monuments at Mahabalipuram."><b>Pallava</b></div>
+          <div class="bar" tabindex="0" style="top:79.3%; height:7.1%; background:var(--series-aqua)" data-name="Hoysala Dynasty" data-dates="1026 – 1343 CE" data-ruler="—" data-fact="Intricate temple architecture at Belur and Halebidu."><b>Hoysala</b></div>
+        </div>
+
+        <!-- lane 6 -->
+        <div class="lane" style="left:660px">
+          <div class="bar" tabindex="0" style="top:42.7%; height:2.5%; background:var(--series-violet)" data-name="Kosala" data-dates="c. 600 – 490 BCE" data-ruler="Prasenajit" data-fact="One of the largest Mahajanapadas before losing out to Magadha."><b>Kosala</b></div>
+          <div class="bar" tabindex="0" style="top:75.3%; height:9.7%; background:var(--series-aqua)" data-name="Chola Empire (Imperial phase)" data-dates="848 – 1279 CE" data-ruler="Raja Raja Chola I, Rajendra Chola I" data-fact="Strongest navy in Indian history; expedition against Srivijaya."><b>Chola Empire</b></div>
+          <div class="bar" tabindex="0" style="top:86.5%; height:4.1%; background:var(--series-orange)" data-name="Bahmani Sultanate" data-dates="1347 – 1527 CE" data-ruler="—" data-fact="Deccan rival of Vijayanagara; later split into five sultanates."><b>Bahmani Sultanate</b></div>
+        </div>
+
+        <!-- lane 7 -->
+        <div class="lane" style="left:770px">
+          <div class="bar" tabindex="0" style="top:42.7%; height:4.5%; background:var(--series-violet)" data-name="Avanti" data-dates="c. 600 – 400 BCE" data-ruler="Pradyota" data-fact="Capital Ujjain; controlled key north-south trade routes."><b>Avanti</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <!-- ================= ERA 1 ================= -->
+  <h2 class="era-title">1. Indus Valley Civilization <span style="color:var(--text-muted); font-weight:400;">(c. 2500 – 1900 BCE)</span></h2>
+  <p class="era-sub">No known named rulers — the script is still undeciphered. Not a kingdom in the usual sense; a network of highly organized cities.</p>
+  <div class="era-image-wrap">
+    <img class="era-image" src="https://commons.wikimedia.org/wiki/Special:FilePath/Mohenjo-daro.jpg?width=500" alt="Excavated ruins of Mohenjo-daro" loading="lazy">
+    <div class="era-image-cap">Mohenjo-daro ruins · <a href="https://commons.wikimedia.org/wiki/File:Mohenjo-daro.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  </div>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Harappa &amp; Mohenjo-daro</h3>
+      <div class="dates">c. 2500 – 1900 BCE · Indus &amp; Ghaggar-Hakra river basins (modern Pakistan/NW India)</div>
+      <div class="label">Governance</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:0 0 10px;">No temples-to-kings or palace complexes have been found, so historians debate whether it was ruled by kings, councils, or merchant elites — unusually egalitarian for its time.</p>
+      <ul class="famous">
+        <li>Precise urban planning: grid-pattern streets, standardized brick sizes</li>
+        <li>The world's earliest known covered drainage/sewage systems</li>
+        <li>Standardized weights and measures used across a huge trade network</li>
+        <li>Long-distance trade with Mesopotamia (seals found in Sumer)</li>
+        <li>Undeciphered Indus script — the civilization's biggest remaining mystery</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 2 ================= -->
+  <h2 class="era-title">2. Vedic Period <span style="color:var(--text-muted); font-weight:400;">(c. 1500 – 600 BCE)</span></h2>
+  <p class="era-sub">Indo-Aryan tribes settle the Gangetic plain; the Vedas are composed; tribal chiefdoms slowly become territorial kingdoms (Janapadas).</p>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Kuru Kingdom</h3>
+      <div class="dates">c. 1200 – 800 BCE · near modern Delhi/Haryana</div>
+      <ul class="rulers">
+        <li><b>King Parikshit</b> — a semi-legendary king credited with consolidating the Kuru realm; grandson of the Pandavas of the <i>Mahabharata</i> tradition.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous">
+        <li>Setting: the Kurukshetra War of the <i>Mahabharata</i> is traditionally dated to this era</li>
+        <li>Compilation and ritual codification of the Vedas</li>
+      </ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Videha &amp; Kosala (Later Vedic)</h3>
+      <div class="dates">c. 1000 – 600 BCE · modern Bihar/UP border and Ayodhya region</div>
+      <ul class="rulers">
+        <li><b>King Janaka of Videha</b> — philosopher-king famed for hosting great sages; father of Sita in the <i>Ramayana</i> tradition.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous">
+        <li>Rise of philosophical debate that fed into the Upanishads</li>
+        <li>Setting for much of the <i>Ramayana</i> narrative</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 3 ================= -->
+  <h2 class="era-title">3. The Sixteen Mahajanapadas <span style="color:var(--text-muted); font-weight:400;">(c. 600 – 345 BCE)</span></h2>
+  <p class="era-sub">Sixteen major kingdoms/republics covered the Gangetic plain at once — this is the era where "so many kingdoms at the same time" really starts. Magadha slowly out-competes and absorbs the rest.</p>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Magadha <span style="font-weight:400; color:var(--text-muted); font-size:0.8rem;">(the eventual winner)</span></h3>
+      <div class="dates">c. 600 – 345 BCE · capital Rajgir/Girivraja, later Pataliputra · modern Bihar</div>
+      <ul class="rulers">
+        <li><b>Bimbisara</b> — expanded Magadha through strategic marriages and alliances rather than pure conquest; contemporary of both the Buddha and Mahavira.</li>
+        <li><b>Ajatashatru</b> — his son; a more aggressive conqueror who annexed Vaishali (a powerful neighboring republic) and fortified Pataliputra, which became India's greatest capital for the next thousand years.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous">
+        <li>Becoming the springboard for the Nanda and then Maurya Empires</li>
+        <li>Hosting the lifetimes of the Buddha and Mahavira</li>
+      </ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Kosala</h3>
+      <div class="dates">c. 600 – 490 BCE · capital Shravasti · modern eastern UP</div>
+      <ul class="rulers">
+        <li><b>Prasenajit</b> — Magadha's main rival for decades; eventually his kingdom was absorbed by Magadha via a marriage-alliance-turned-annexation.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>One of the largest and most powerful of the 16 Mahajanapadas before losing out to Magadha</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Avanti</h3>
+      <div class="dates">c. 600 – 400 BCE · capital Ujjain · modern Malwa, MP</div>
+      <ul class="rulers">
+        <li><b>Pradyota</b> — controlled key trade routes between north and south India; his dynasty was a serious military rival to Magadha for a time.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Ujjain's long career afterward as a major center of astronomy and Sanskrit learning</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-violet)">
+      <h3>Vatsa</h3>
+      <div class="dates">c. 600 – 450 BCE · capital Kaushambi · modern UP near Allahabad</div>
+      <ul class="rulers">
+        <li><b>Udayana</b> — a romantic, semi-legendary king whose exploits became a favorite subject of later Sanskrit drama.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Kaushambi as a major trading and pilgrimage city for centuries after</li></ul>
+    </div>
+  </div>
+  <div class="callout" style="border-left-color:var(--series-violet)">
+    <b>Also happening right now:</b> Gautama Buddha (founder of Buddhism, <b>c. 563 – 483 BCE</b>, dates debated) and Mahavira (founder of Jainism, <b>c. 599 – 527 BCE</b>, dates debated) both lived during this exact period, traveling between these very kingdoms — arguably the most consequential few decades in Indian religious history. Buddha was born in the Shakya republic (in Kosala's orbit), attained enlightenment at Bodh Gaya in <b>Magadha</b>, and spent most of his teaching life moving between <b>Magadha</b> (patron: King Bimbisara, then Ajatashatru) and <b>Kosala</b> (patron: King Prasenajit), before dying at Kushinagar in the Malla republic. Mahavira was born near Vaishali in the Vajji/Licchavi confederacy (later annexed by Magadha) and attained his final liberation (nirvana) at Pavapuri, within <b>Magadha</b>.
+  </div>
+
+  <!-- ================= ERA 4 ================= -->
+  <h2 class="era-title">4. Nanda Dynasty <span style="color:var(--text-muted); font-weight:400;">(c. 345 – 322 BCE)</span></h2>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Nanda Empire</h3>
+      <div class="dates">c. 345 – 322 BCE · capital Pataliputra</div>
+      <ul class="rulers">
+        <li><b>Mahapadma Nanda</b> — first ruler to unify nearly all of northern India under one throne, from Punjab to Bengal; built a famously massive army but taxed the population heavily and was deeply unpopular.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous">
+        <li>Being the first true "empire" (not just a regional kingdom) in Indian history</li>
+        <li>Its unpopularity, which gave a young Chandragupta Maurya his opening</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 5 ================= -->
+  <h2 class="era-title">5. Maurya Empire <span style="color:var(--text-muted); font-weight:400;">(322 – 185 BCE)</span></h2>
+  <p class="era-sub">The first empire to cover almost the entire Indian subcontinent, plus parts of Afghanistan. This is <b>Chandragupta Maurya</b>, not Chandragupta I of the Guptas.</p>
+  <div class="era-image-wrap">
+    <img class="era-image" src="https://commons.wikimedia.org/wiki/Special:FilePath/Sarnath_capital.jpg?width=400" alt="Lion Capital of Ashoka at Sarnath" loading="lazy">
+    <div class="era-image-cap">The Lion Capital of Ashoka, Sarnath (now India's national emblem) · <a href="https://commons.wikimedia.org/wiki/File:Sarnath_capital.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  </div>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Chandragupta Maurya</h3>
+      <div class="dates">r. c. 322 – 297 BCE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">Overthrew the hated Nanda dynasty with the guidance of his strategist and mentor <b>Chanakya (Kautilya)</b>, author of the <i>Arthashastra</i> — one of the world's earliest treatises on statecraft. He then fought Alexander's former general Seleucus I, won, and in the peace treaty received large territories in the northwest plus a Greek princess in marriage.</p>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Founding the first pan-Indian empire; later abdicating to become a Jain monk</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Bindusara</h3>
+      <div class="dates">r. c. 297 – 273 BCE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">Chandragupta's son; pushed the empire's borders deep into the Deccan (southern plateau), earning the Greek nickname "Amitrochates" ("slayer of enemies"). Kept diplomatic ties with the Hellenistic kings to the west.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Ashoka the Great</h3>
+      <div class="dates">r. c. 268 – 232 BCE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">The empire's most famous ruler. Conquered Kalinga (modern Odisha) in a war so bloody that he renounced further conquest, converted to Buddhism, and spent the rest of his reign governing through <i>dhamma</i> (moral law) — carved onto rock edicts and pillars across the subcontinent, several of which survive today (the Ashoka Chakra on India's flag comes from his Sarnath pillar). Sent Buddhist missionaries as far as Sri Lanka and possibly the Mediterranean.</p>
+      <div class="label">Famous for</div>
+      <ul class="famous">
+        <li>Turning Buddhism from a regional sect into a world religion</li>
+        <li>Some of the earliest surviving royal inscriptions in India</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 6 ================= -->
+  <h2 class="era-title">6. Post-Mauryan Fragmentation <span style="color:var(--text-muted); font-weight:400;">(c. 185 BCE – 320 CE)</span></h2>
+  <p class="era-sub">The empire splits. This is the messiest "everyone at once" period before Gupta: a north-Indian successor state, waves of Central Asian invaders in the northwest, a long-lived Deccan power, and independent Tamil kingdoms in the far south — all running in parallel for centuries.</p>
+  <div class="era-image-wrap">
+    <img class="era-image" src="https://commons.wikimedia.org/wiki/Special:FilePath/Great_Sanchi_Stupa.jpg?width=500" alt="The Great Stupa at Sanchi" loading="lazy">
+    <div class="era-image-cap">The Great Stupa at Sanchi, expanded under the Shungas · <a href="https://commons.wikimedia.org/wiki/File:Great_Sanchi_Stupa.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  </div>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Shunga Dynasty</h3>
+      <div class="dates">185 – 73 BCE · north/central India</div>
+      <ul class="rulers"><li><b>Pushyamitra Shunga</b> — a Mauryan general who seized the throne; sponsored a Sanskrit/Brahmanical revival and major additions to the Sanchi Stupa.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-yellow)">
+      <h3>Indo-Greek Kingdom</h3>
+      <div class="dates">c. 180 – 10 BCE · Punjab/Afghanistan (leftover Greek settlers from Alexander's campaigns)</div>
+      <ul class="rulers"><li><b>Menander I ("Milinda")</b> — the most famous Indo-Greek king; reportedly converted to Buddhism and is the subject of a Buddhist text, the <i>Milindapanha</i>.</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Greco-Buddhist art — the earliest Buddha statues, sculpted in Greek style</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-yellow)">
+      <h3>Indo-Scythians (Sakas)</h3>
+      <div class="dates">c. 100 BCE – 400 CE · western India (Gujarat, Malwa)</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">Central Asian nomadic warriors who carved out kingdoms in western India after being pushed out of their homeland; the "Saka Era" calendar (still used in India's official calendar) is named after them.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-yellow)">
+      <h3>Kushan Empire</h3>
+      <div class="dates">c. 30 – 375 CE · Central Asia to North India</div>
+      <ul class="rulers"><li><b>Kanishka the Great</b> — controlled a huge stretch of the Silk Road; convened the Fourth Buddhist Council; his patronage produced Gandhara art (another Greek-influenced Buddhist art style).</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Connecting India directly into Silk Road trade with China, Persia, and Rome</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Satavahana Dynasty</h3>
+      <div class="dates">c. 230 BCE – 220 CE · the Deccan (modern Maharashtra/Telangana/AP)</div>
+      <ul class="rulers"><li><b>Gautamiputra Satakarni</b> — the dynasty's greatest king; drove out Saka invaders from parts of the Deccan and controlled lucrative Indian Ocean trade routes.</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Longest-running dynasty of this era (nearly 450 years); patronized the Amaravati Buddhist art style</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-aqua)">
+      <h3>Sangam-Age Tamil Kingdoms: Chera, Chola, Pandya</h3>
+      <div class="dates">c. 300 BCE – 300 CE · far south (Kerala/Tamil Nadu)</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">Three simultaneous Tamil kingdoms, constantly at war with each other, who nonetheless produced the <i>Sangam</i> literature — some of the oldest surviving Tamil poetry — and ran an active spice trade with Rome (Roman coins are still found on the Kerala coast).</p>
+    </div>
+  </div>
+
+  <!-- ================= ERA 7 ================= -->
+  <h2 class="era-title">7. Gupta Empire <span style="color:var(--text-muted); font-weight:400;">(c. 320 – 550 CE)</span></h2>
+  <p class="era-sub">India's "Golden Age." <b>This is where Chandragupta I actually belongs</b> — nearly 650 years after Chandragupta Maurya.</p>
+  <div class="era-image-wrap">
+    <img class="era-image" src="https://commons.wikimedia.org/wiki/Special:FilePath/Iron_Pillar,_Delhi.jpg?width=400" alt="The Iron Pillar of Delhi, Gupta-era metallurgy" loading="lazy">
+    <div class="era-image-cap">The rust-resistant Iron Pillar of Delhi, erected under Chandragupta II · <a href="https://commons.wikimedia.org/wiki/File:Iron_Pillar,_Delhi.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  </div>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Chandragupta I</h3>
+      <div class="dates">r. c. 320 – 335 CE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">Founder of the Gupta dynasty proper; expanded a modest regional holding into a real kingdom largely through a strategic marriage to a princess of the powerful Lichhavi clan, gaining territory and legitimacy at once.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Samudragupta</h3>
+      <div class="dates">r. c. 335 – 375 CE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">Sometimes called the "Napoleon of India" for near-constant, near-unbroken military campaigns that brought most of northern India and parts of the south under Gupta influence — yet he was also a poet and accomplished musician, and his coins depict him playing the veena.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Chandragupta II (Vikramaditya)</h3>
+      <div class="dates">r. c. 375 – 415 CE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary); margin:4px 0 10px;">Reign marks the empire's peak. His court hosted the legendary "Navaratna" (Nine Gems), including the poet-playwright <b>Kalidasa</b>. This period saw the mathematician-astronomer <b>Aryabhata</b> lay groundwork used across the Gupta era, refinement of the decimal number system with a symbol for zero, and major advances in medicine and metallurgy (the rust-resistant Iron Pillar of Delhi dates to this time).</p>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Peak Gupta territory, art, literature, science — the reference point for "Golden Age of India"</li></ul>
+    </div>
+  </div>
+  <div class="callout" style="border-left-color:var(--series-orange)">
+    <b>At the same time:</b> the Vakataka dynasty ruled the Deccan and intermarried with the Guptas; further south the Sangam-age Tamil kingdoms had recently faded, giving way to early Pallava power. The Gupta Empire eventually weakened under repeated invasions by the Hunas (White Huns) from Central Asia.
+  </div>
+
+  <!-- ================= ERA 8 ================= -->
+  <h2 class="era-title">8. Classical Regional Kingdoms <span style="color:var(--text-muted); font-weight:400;">(c. 550 – 1200 CE)</span></h2>
+  <p class="era-sub">No single empire controls India for 650 years — instead, three-to-five major powers run in parallel and constantly fight over the same territory. This is the densest "everyone at once" era on the whole timeline.</p>
+  <div class="era-image-wrap">
+    <img class="era-image" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kailasa_temple_Ellora.jpg?width=500" alt="Kailasa Temple at Ellora, carved from a single rock" loading="lazy">
+    <div class="era-image-cap">Kailasa Temple, Ellora — carved downward from a single rock face by the Rashtrakutas · <a href="https://commons.wikimedia.org/wiki/File:Kailasa_temple_Ellora.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  </div>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Vardhana Dynasty (Harsha)</h3>
+      <div class="dates">606 – 647 CE · north India, capital Kannauj</div>
+      <ul class="rulers"><li><b>Harshavardhana</b> — briefly reunified much of the north; hosted the Chinese Buddhist pilgrim Xuanzang, whose travel diary is a key historical source; patronized the great Nalanda university.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Chalukyas of Badami</h3>
+      <div class="dates">543 – 753 CE · Deccan</div>
+      <ul class="rulers"><li><b>Pulakeshin II</b> — famously handed Harsha a rare defeat when Harsha tried to expand south, keeping the Deccan independent of northern control.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-aqua)">
+      <h3>Pallava Dynasty</h3>
+      <div class="dates">c. 550 – 897 CE (peak) · Tamil country</div>
+      <ul class="rulers"><li><b>Narasimhavarman I</b> — decisively defeated the Chalukyas; built the rock-cut monuments at Mahabalipuram, including the Shore Temple.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Rashtrakuta Dynasty</h3>
+      <div class="dates">753 – 982 CE · Deccan (succeeded the Chalukyas)</div>
+      <ul class="rulers"><li><b>Krishna I</b> — commissioned the Kailasa Temple at Ellora, an entire temple carved downward out of a single rock face — still considered an engineering marvel.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-green)">
+      <h3>Pratihara (Gurjara-Pratihara) Dynasty</h3>
+      <div class="dates">c. 730 – 1036 CE · north/west India</div>
+      <ul class="rulers"><li><b>Mihira Bhoja</b> — brought the empire to its territorial peak and fought the decades-long Tripartite Struggle against the Palas and Rashtrakutas over Kannauj. (Earlier Pratihara rulers, like Nagabhata I, had already halted Arab expansion out of Sindh back in the 8th century.)</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-magenta)">
+      <h3>Pala Dynasty</h3>
+      <div class="dates">750 – 1161 CE · Bengal &amp; Bihar</div>
+      <ul class="rulers"><li><b>Dharmapala</b> — the dynasty's most powerful ruler; a major patron of Buddhism who founded Vikramashila, one of medieval India's great universities.</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Western Chalukyas (Kalyani)</h3>
+      <div class="dates">973 – 1189 CE · Deccan/Karnataka, capital Kalyani</div>
+      <ul class="rulers"><li><b>Vikramaditya VI</b> — succeeded the Rashtrakutas as the dominant Deccan power; his 50-year reign was stable and prosperous enough that Karnataka used a "Chalukya-Vikrama era" calendar dated from his coronation for centuries afterward.</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>One of the longest single reigns in Indian history (1076–1126); constant wars with the Cholas over Vengi (coastal Andhra)</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-aqua)">
+      <h3>Chola Empire (Imperial phase)</h3>
+      <div class="dates">848 – 1279 CE · Tamil country</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Brihadeeswara_Temple_-_Thanjavur.jpg?width=400" alt="Brihadeeswarar Temple, Thanjavur" loading="lazy">
+      <ul class="rulers">
+        <li><b>Raja Raja Chola I</b> — built the massive Brihadeeswarar Temple at Thanjavur and conquered Sri Lanka.</li>
+        <li><b>Rajendra Chola I</b> — his son; sent a naval expedition across the Bay of Bengal against the Srivijaya empire (modern Indonesia/Malaysia) — one of very few overseas military campaigns in Indian history.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>The most powerful navy in Indian history; sophisticated local self-government via village councils (documented in detailed inscriptions)</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-aqua)">
+      <h3>Hoysala Dynasty</h3>
+      <div class="dates">1026 – 1343 CE · Karnataka</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">Rose as the Chalukyas/Rashtrakutas declined in the Deccan; famous almost entirely for exceptionally intricate temple architecture, especially at Belur and Halebidu.</p>
+    </div>
+  </div>
+  <div class="callout" style="border-left-color:var(--series-green)">
+    <b>Memory hook — the "Tripartite Struggle":</b> for roughly two centuries, the Pratiharas (northwest), Palas (east), and Rashtrakutas (Deccan) fought repeatedly over control of Kannauj, the symbolic seat of northern power — a three-way tug-of-war that no single side ever won outright.
+  </div>
+
+  <!-- ================= ERA 9 ================= -->
+  <h2 class="era-title">9. Delhi Sultanate &amp; Vijayanagara/Bahmani <span style="color:var(--text-muted); font-weight:400;">(1206 – 1526 CE)</span></h2>
+  <p class="era-sub">The first sustained Muslim rule in north India, running for over three centuries through several dynasties — while the south splits into a Hindu empire and a rival Muslim sultanate that fought each other constantly.</p>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Delhi Sultanate</h3>
+      <div class="dates">1206 – 1526 CE · five successive dynasties</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Qutub_Minar_and_its_Monuments.jpg?width=400" alt="Qutub Minar, Delhi" loading="lazy">
+      <ul class="rulers">
+        <li><b>Qutb-ud-din Aibak</b> (Slave/Mamluk dynasty, 1206–1290) — a former slave-general who founded the Sultanate; began construction of the Qutub Minar.</li>
+        <li><b>Alauddin Khalji</b> (Khalji dynasty, 1290–1320) — repelled repeated Mongol invasions and imposed strict market price controls; pushed Sultanate armies deep into the Deccan for the first time.</li>
+        <li><b>Muhammad bin Tughlaq</b> (Tughlaq dynasty, 1320–1414) — infamous for forcibly relocating the entire capital from Delhi to Daulatabad and back, and for an experimental (and failed) token currency.</li>
+        <li><b>Ibrahim Lodi</b> (Lodi dynasty, 1451–1526) — the last Delhi Sultan, defeated and killed by Babur at the First Battle of Panipat, ending the Sultanate and opening the Mughal era.</li>
+      </ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Vijayanagara Empire</h3>
+      <div class="dates">1336 – 1646 CE · south India</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Hampi_chariot.jpg?width=400" alt="Stone chariot at Vittala Temple, Hampi" loading="lazy">
+      <ul class="rulers"><li><b>Krishnadevaraya</b> — the empire's peak ruler; a major patron of Telugu and Kannada literature, oversaw huge temple-building projects at the capital, Hampi, and repeatedly defeated the neighboring Deccan sultanates.</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Being the last great Hindu empire before the Mughal era fully dominates the subcontinent</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Bahmani Sultanate</h3>
+      <div class="dates">1347 – 1527 CE · Deccan</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">Broke away from the Delhi Sultanate to rule the Deccan independently; constant rival of Vijayanagara. Eventually fractured into five smaller Deccan Sultanates (including Bijapur and Golconda), which lasted into the Mughal period.</p>
+    </div>
+  </div>
+
+  <!-- ================= ERA 10 ================= -->
+  <h2 class="era-title">10. Mughal Empire &amp; Contemporaries <span style="color:var(--text-muted); font-weight:400;">(1526 – 1857 CE)</span></h2>
+  <p class="era-sub">The last great pre-colonial empire — and, at the same time, the rise of the powers that would eventually dismantle it from within: the Marathas, the Sikhs, and the British.</p>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>Mughal Empire</h3>
+      <div class="dates">1526 – 1857 CE</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal,_Agra,_India.jpg?width=400" alt="The Taj Mahal, Agra" loading="lazy">
+      <ul class="rulers">
+        <li><b>Babur</b> — a Central Asian prince descended from both Timur and Genghis Khan; founded the empire by defeating the Delhi Sultanate at Panipat in 1526.</li>
+        <li><b>Akbar</b> — the true architect of the empire; expanded it hugely, built alliances with Rajput kings through marriage, and promoted religious tolerance through his own syncretic court philosophy, Din-i-Ilahi.</li>
+        <li><b>Shah Jahan</b> — presided over the empire's cultural peak; commissioned the Taj Mahal in memory of his wife, Mumtaz Mahal.</li>
+        <li><b>Aurangzeb</b> — brought the empire to its largest-ever territorial extent, but his stricter religious policies and near-constant wars (especially against the rising Marathas) badly strained imperial finances and set up its long decline.</li>
+      </ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>The Taj Mahal, Red Fort, and a highly centralized administrative system later partly reused by the British</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-orange)">
+      <h3>Maratha Empire</h3>
+      <div class="dates">1674 – 1818 CE · Deccan, later most of India</div>
+      <ul class="rulers"><li><b>Shivaji Maharaj</b> — founder; built a formidable hill-fort network and used fast guerrilla tactics to carve out an independent kingdom from Mughal and Bijapur territory; later Peshwas (prime ministers) expanded Maratha influence across most of the subcontinent by the mid-1700s.</li></ul>
+      <div class="label">Famous for</div>
+      <ul class="famous"><li>Becoming, by the 18th century, arguably the strongest single power in India — before losing decisively to the British at the Third Anglo-Maratha War (1818)</li></ul>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-green)">
+      <h3>Sikh Empire</h3>
+      <div class="dates">1799 – 1849 CE · Punjab</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Ranjit_Singh_at_Harmandir_Sahib_-_August_Schoefft_-_Vienna_1850_-_Princess_Bamba_Collection_-_Lahore_Fort.jpg?width=400" alt="Painting of Maharaja Ranjit Singh at Harmandir Sahib" loading="lazy">
+      <ul class="rulers"><li><b>Maharaja Ranjit Singh</b> — unified the previously fractured Sikh misls (confederacies) into a single, well-organized state with a modernized army; the last major independent Indian kingdom to fall to the British.</li></ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 11 ================= -->
+  <h2 class="era-title">11. British Colonial Period <span style="color:var(--text-muted); font-weight:400;">(1757 – 1947 CE)</span></h2>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-red)">
+      <h3>East India Company Rule</h3>
+      <div class="dates">1757 – 1858 CE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);"><b>Robert Clive's</b> victory at the Battle of Plassey in 1757 gave the Company control of Bengal, and it expanded, region by region, over the next century — a trading company, not a government, effectively ruling most of India.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-red)">
+      <h3>Revolt of 1857</h3>
+      <div class="dates">1857 – 1858 CE</div>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">A large-scale uprising against Company rule, led in part by <b>Rani Lakshmibai of Jhansi</b> and nominally supported by <b>Bahadur Shah II</b>, the last Mughal emperor. Suppressed, but it ended Company rule — the British Crown took direct control afterward.</p>
+    </div>
+    <div class="kcard" style="border-top-color:var(--series-red)">
+      <h3>British Raj &amp; the Freedom Movement</h3>
+      <div class="dates">1858 – 1947 CE</div>
+      <img class="era-image" style="max-width:100%; margin:6px 0 10px;" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gandhi_at_Dandi,_5_April_1930.jpg?width=400" alt="Gandhi at Dandi during the Salt March, 5 April 1930" loading="lazy">
+      <ul class="rulers">
+        <li><b>Indian National Congress</b> (founded 1885) — became the main vehicle for the independence movement.</li>
+        <li><b>Mohandas Gandhi</b> — led mass non-violent campaigns (Non-Cooperation, the Salt March, Quit India) that made independence politically unsustainable for Britain.</li>
+        <li><b>Subhas Chandra Bose</b> — pursued an armed alternative, leading the Indian National Army against the British during WWII.</li>
+        <li><b>Muhammad Ali Jinnah</b> — led the Muslim League's push for a separate Muslim-majority state, resulting in Partition alongside independence.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ================= ERA 12 ================= -->
+  <h2 class="era-title">12. Independence <span style="color:var(--text-muted); font-weight:400;">(1947)</span></h2>
+  <div class="card-grid">
+    <div class="kcard" style="border-top-color:var(--series-blue)">
+      <h3>1947 — Independence &amp; Partition</h3>
+      <p style="font-size:0.9rem; color:var(--text-secondary);">British India was partitioned into India and Pakistan on 15 August 1947. <b>Jawaharlal Nehru</b> became independent India's first Prime Minister. This closes roughly 4,400 years of the story above — from unnamed Indus Valley city-planners to a modern nation-state.</p>
+    </div>
+  </div>
+
+  <footer>Built as a study aid — dates for ancient dynasties (pre-600 BCE especially) are approximate and vary by source; treat exact years as "roughly" rather than precise. Monument photos courtesy of Wikimedia Commons contributors.</footer>
+</div>
+
+<script>
+var MAP_IMG_SRC = "https://commons.wikimedia.org/wiki/Special:FilePath/India_outline.svg";
+
+// Rough rectangular zones over the India_outline.svg image (percent of image box).
+// These are schematic/approximate — for memorization, not cartographic accuracy.
+var ZONES = {
+  kashmir:      { left: 18, top: 2,  width: 28, height: 14, label: "Kashmir" },
+  northwest:    { left: 4,  top: 24, width: 26, height: 22, label: "Punjab / Indus (NW)" },
+  north:        { left: 28, top: 24, width: 30, height: 22, label: "Delhi / North plain" },
+  eastGangetic: { left: 44, top: 30, width: 24, height: 20, label: "Bihar / East Gangetic" },
+  bengal:       { left: 74, top: 26, width: 24, height: 27, label: "Bengal / Northeast" },
+  gujaratMalwa: { left: 4,  top: 44, width: 30, height: 22, label: "Gujarat / Malwa (W)" },
+  deccan:       { left: 28, top: 47, width: 38, height: 26, label: "Deccan (Central)" },
+  andhra:       { left: 54, top: 58, width: 24, height: 20, label: "Andhra (SE)" },
+  karnataka:    { left: 28, top: 64, width: 30, height: 16, label: "Karnataka" },
+  tamil:        { left: 42, top: 78, width: 28, height: 20, label: "Tamil Nadu (S)" },
+  kerala:       { left: 28, top: 78, width: 18, height: 20, label: "Kerala (SW)" },
+  panIndia:     { left: 6,  top: 4,  width: 92, height: 92, label: "Most of the subcontinent" }
+};
+
+function renderMap(entry, color, size) {
+  size = size || 220;
+  var zones = (entry && entry.regions) || [];
+  var overlays = zones.map(function (key) {
+    var z = ZONES[key];
+    if (!z) return '';
+    return '<div class="map-zone highlight" style="left:' + z.left + '%; top:' + z.top + '%; width:' + z.width + '%; height:' + z.height + '%; background:' + color + ';" title="' + z.label + '"></div>';
+  }).join('');
+  return '<div class="india-map-wrap tt-map-wrap" style="width:' + size + 'px;">' +
+    '<img class="india-map-img" style="width:' + size + 'px;" src="' + MAP_IMG_SRC + '?width=' + size + '" alt="Map of India" loading="eager">' +
+    overlays +
+    '</div>';
+}
+
+var EMPIRE_DATA = {
+  "Indus Valley Civilization": {
+    img: "Mohenjo-daro.jpg",
+    blurb: "No temples-to-kings or palace complexes have ever been found, so historians debate whether it was ruled by kings, councils, or merchant elites. Famous for precise urban planning, covered drainage, and long-distance trade with Mesopotamia.",
+    capital: "No single capital — major cities: Harappa &amp; Mohenjo-daro",
+    facts: [
+      "Precise urban planning: grid-pattern streets, standardized brick sizes",
+      "World's earliest known covered drainage/sewage systems",
+      "Long-distance trade with Mesopotamia (seals found in Sumer)",
+      "Undeciphered Indus script — the civilization's biggest remaining mystery"
+    ],
+    start: -2500, end: -1900, rulers: [], regions: ["northwest"]
+  },
+  "Vedic Period — Kuru Kingdom": {
+    img: "Mohenjo-daro.jpg",
+    blurb: "Indo-Aryan tribes settle the Gangetic plain and compile the Vedas. The Kuru realm is the traditional setting of the Mahabharata's Kurukshetra War.",
+    capital: "Hastinapura (traditional)",
+    facts: [
+      "Setting of the Kurukshetra War in the Mahabharata",
+      "Compilation and ritual codification of the Vedas"
+    ],
+    notable: [{ name: "Vyasa", note: "traditionally credited with compiling the Vedas and composing the Mahabharata" }],
+    start: -1500, end: -1000,
+    rulers: [{ name: "King Parikshit", start: -1500, end: -1000, note: "dates traditional, not precise" }],
+    regions: ["north"]
+  },
+  "Later Vedic Janapadas (Videha, Kosala)": {
+    img: null,
+    blurb: "Tribal chiefdoms harden into territorial kingdoms (Janapadas). Philosophical debate in courts like Videha's fed directly into the Upanishads.",
+    capital: "Mithila (Videha); Ayodhya (Kosala)",
+    facts: [
+      "Rise of philosophical debate that fed into the Upanishads",
+      "Setting for much of the Ramayana narrative"
+    ],
+    notable: [
+      { name: "Yajnavalkya", note: "philosopher-sage at King Janaka's court; central figure of the Brihadaranyaka Upanishad" },
+      { name: "Gargi Vachaknavi", note: "female Vedic philosopher who debated Yajnavalkya at Janaka's court" }
+    ],
+    start: -1000, end: -600,
+    rulers: [{ name: "King Janaka of Videha", start: -1000, end: -600, note: "philosopher-king, Ramayana tradition" }],
+    regions: ["eastGangetic"]
+  },
+  "Magadha": {
+    img: "Sarnath_capital.jpg",
+    blurb: "Out-competed and absorbed rival Mahajanapadas through marriage-alliances and conquest, becoming the springboard for the Nanda and Maurya Empires. Contemporary of the Buddha and Mahavira.",
+    capital: "Rajgir/Girivraja, later Pataliputra",
+    facts: [
+      "Becoming the springboard for the Nanda and then Maurya Empires",
+      "Hosting the lifetimes of the Buddha and Mahavira"
+    ],
+    notable: [
+      { name: "Gautama Buddha", note: "c. 563 – 483 BCE (dates debated). Born in Lumbini (Shakya republic, in Kosala's orbit); attained enlightenment at Bodh Gaya, in Magadha; his chief royal patrons were Bimbisara and Ajatashatru of Magadha and Prasenajit of Kosala; died at Kushinagar (Malla republic)." },
+      { name: "Mahavira", note: "c. 599 – 527 BCE (dates debated). Born near Vaishali in the Vajji/Licchavi confederacy (later annexed by Magadha); attained nirvana at Pavapuri, within Magadha." }
+    ],
+    start: -600, end: -345,
+    rulers: [
+      { name: "Bimbisara", start: -558, end: -491 },
+      { name: "Ajatashatru", start: -491, end: -461 }
+    ],
+    regions: ["eastGangetic"]
+  },
+  "Nanda Dynasty": {
+    img: "Nanda empire karshapana.jpg",
+    blurb: "First dynasty to unify nearly all of northern India under one throne. Famously wealthy and heavily taxing, which made it deeply unpopular — and vulnerable.",
+    capital: "Pataliputra",
+    facts: [
+      "Being the first true \"empire\" (not just a regional kingdom) in Indian history",
+      "Its unpopularity, which gave a young Chandragupta Maurya his opening"
+    ],
+    notable: [{ name: "Chanakya (Kautilya)", note: "tradition holds he was first snubbed at the Nanda court, before mentoring Chandragupta Maurya in overthrowing it" }],
+    start: -345, end: -322,
+    boundaryImg: "Nanda Empire, c.325 BCE.png",
+    rulers: [
+      { name: "Mahapadma Nanda", start: -345, end: -329 },
+      { name: "Dhana Nanda", start: -329, end: -322, note: "overthrown by Chandragupta Maurya" }
+    ],
+    regions: ["eastGangetic", "north"]
+  },
+  "Maurya Empire": {
+    img: "Sarnath_capital.jpg",
+    blurb: "The first empire to cover almost the entire subcontinent. Ashoka's rock edicts and the Sarnath Lion Capital (now India's national emblem) survive from this era.",
+    capital: "Pataliputra",
+    facts: [
+      "Founding the first pan-Indian empire",
+      "Turning Buddhism from a regional sect into a world religion under Ashoka",
+      "Some of the earliest surviving royal inscriptions in India"
+    ],
+    notable: [
+      { name: "Chanakya (Kautilya)", note: "strategist and mentor to Chandragupta Maurya; traditionally credited as author of the Arthashastra" },
+      { name: "Megasthenes", note: "Greek ambassador at Chandragupta's court; his (partly lost) account \"Indica\" is a key outside source on the empire" }
+    ],
+    start: -322, end: -185,
+    boundaryImg: "Maurya Empire c.260 BCE.png",
+    rulers: [
+      { name: "Chandragupta Maurya", start: -322, end: -297 },
+      { name: "Bindusara", start: -297, end: -273 },
+      { name: "Ashoka the Great", start: -268, end: -232 }
+    ],
+    regions: ["panIndia"]
+  },
+  "Shunga Dynasty": {
+    img: "Great_Sanchi_Stupa.jpg",
+    blurb: "A Mauryan general seized the throne and sponsored a Sanskrit/Brahmanical revival, along with major additions to the Sanchi Stupa.",
+    capital: "Pataliputra, later Vidisha",
+    facts: [
+      "Sanskrit/Brahmanical revival after Mauryan-era Buddhist patronage",
+      "Major additions to the Sanchi Stupa"
+    ],
+    notable: [{ name: "Patanjali", note: "grammarian traditionally placed at Pushyamitra Shunga's court; author of the Mahabhashya commentary on Sanskrit grammar" }],
+    start: -185, end: -73,
+    rulers: [{ name: "Pushyamitra Shunga", start: -185, end: -149 }],
+    regions: ["north", "eastGangetic"]
+  },
+  "Kanva Dynasty": {
+    img: null,
+    blurb: "A brief successor dynasty to the Shungas in north India, before the region fragmented further.",
+    capital: "Pataliputra (nominal)",
+    facts: [
+      "Bridged the Shunga collapse and the rise of the Satavahanas and, later, the Guptas"
+    ],
+    start: -73, end: -28,
+    rulers: [{ name: "Vasudeva Kanva", start: -73, end: -66 }],
+    regions: ["north", "eastGangetic"]
+  },
+  "Gupta Empire": {
+    img: "Iron_Pillar,_Delhi.jpg",
+    blurb: "India's 'Golden Age' — decimal numerals and zero refined, Aryabhata's astronomy, Kalidasa's poetry, and the rust-resistant Iron Pillar of Delhi all date from this era.",
+    capital: "Pataliputra",
+    facts: [
+      "Refinement of the decimal number system and a symbol for zero",
+      "Aryabhata's astronomy and mathematics",
+      "Kalidasa's Sanskrit poetry and drama",
+      "The rust-resistant Iron Pillar of Delhi"
+    ],
+    notable: [
+      { name: "Kalidasa", note: "poet-playwright; author of Abhijnanashakuntalam and Meghaduta" },
+      { name: "Aryabhata", note: "astronomer-mathematician; his 499 CE Aryabhatiya laid groundwork for Indian trigonometry and planetary math" },
+      { name: "Varahamihira", note: "astronomer and mathematician of the later Gupta era, author of the Pancha-siddhantika" }
+    ],
+    start: 320, end: 550,
+    boundaryImg: "Gupta Empire map.png",
+    rulers: [
+      { name: "Chandragupta I", start: 320, end: 335, note: "not to be confused with Chandragupta Maurya" },
+      { name: "Samudragupta", start: 335, end: 375 },
+      { name: "Chandragupta II", start: 375, end: 415 }
+    ],
+    regions: ["north", "eastGangetic", "bengal"]
+  },
+  "Vardhana Dynasty": {
+    img: "Nalanda University India ruins.jpg",
+    blurb: "Briefly reunified much of north India. Hosted the Chinese Buddhist pilgrim Xuanzang and patronized the Nalanda university.",
+    capital: "Kannauj",
+    facts: [
+      "Hosted the Chinese Buddhist pilgrim Xuanzang, a key historical source",
+      "Patronized the great Nalanda university"
+    ],
+    notable: [
+      { name: "Xuanzang", note: "Chinese Buddhist pilgrim whose travel diary is a key historical source on Harsha's reign" },
+      { name: "Banabhatta", note: "Harsha's court poet; author of the Harshacharita (a biography of the king) and the romance Kadambari" }
+    ],
+    start: 606, end: 647,
+    rulers: [{ name: "Harshavardhana", start: 606, end: 647 }],
+    regions: ["north", "eastGangetic"]
+  },
+  "Delhi Sultanate": {
+    img: "Qutub_Minar_and_its_Monuments.jpg",
+    blurb: "First sustained Muslim rule in north India, running through five dynasties over three centuries — Mamluk, Khalji, Tughlaq, Sayyid, and Lodi.",
+    capital: "Delhi",
+    facts: [
+      "First sustained Muslim rule in north India, across five dynasties",
+      "Qutub Minar begun under Qutb-ud-din Aibak",
+      "Repelled repeated Mongol invasions under Alauddin Khalji"
+    ],
+    notable: [
+      { name: "Amir Khusrau", note: "poet and musician (\"the parrot of India\") active across the Khalji and Tughlaq courts" },
+      { name: "Ibn Battuta", note: "Moroccan traveler who visited during Muhammad bin Tughlaq's reign and served as a qadi (judge) in Delhi" }
+    ],
+    start: 1206, end: 1526,
+    boundaryImg: "Delhi Sultanate map.png",
+    rulers: [
+      { name: "Qutb-ud-din Aibak", start: 1206, end: 1210, note: "Mamluk dynasty" },
+      { name: "Alauddin Khalji", start: 1296, end: 1316, note: "Khalji dynasty" },
+      { name: "Muhammad bin Tughlaq", start: 1325, end: 1351, note: "Tughlaq dynasty" },
+      { name: "Ibrahim Lodi", start: 1517, end: 1526, note: "Lodi dynasty, lost to Babur" }
+    ],
+    regions: ["north", "eastGangetic", "deccan"]
+  },
+  "Mughal Empire": {
+    img: "Taj_Mahal,_Agra,_India.jpg",
+    blurb: "The last great pre-colonial empire. Built the Taj Mahal and Red Fort, and ran a highly centralized administration later partly reused by the British.",
+    capital: "Agra, later Delhi (Shahjahanabad)",
+    facts: [
+      "The Taj Mahal and Red Fort",
+      "A highly centralized administration later partly reused by the British",
+      "Largest territorial extent under Aurangzeb"
+    ],
+    notable: [
+      { name: "Abul Fazl", note: "Akbar's court historian and vizier; author of the Akbarnama and Ain-i-Akbari" },
+      { name: "Tansen", note: "legendary musician at Akbar's court, one of his \"Navaratna\" (Nine Gems)" }
+    ],
+    start: 1526, end: 1857,
+    boundaryImg: "Mughal Empire, 1707.png",
+    rulers: [
+      { name: "Babur", start: 1526, end: 1530 },
+      { name: "Akbar", start: 1556, end: 1605 },
+      { name: "Shah Jahan", start: 1628, end: 1658 },
+      { name: "Aurangzeb", start: 1658, end: 1707 }
+    ],
+    regions: ["panIndia"]
+  },
+  "Indo-Greek Kingdom": {
+    img: "Gandhara_standing_Buddha.jpg",
+    blurb: "Leftover Greek settlers from Alexander's campaigns ruled Punjab/Afghanistan and produced Greco-Buddhist art — the earliest Buddha statues, sculpted Greek-style.",
+    capital: "Sagala (modern Sialkot)",
+    facts: [
+      "Greco-Buddhist art — the earliest Buddha statues, sculpted in Greek style"
+    ],
+    notable: [{ name: "Nagasena", note: "Buddhist monk who debated King Menander I in the Milindapanha (\"Questions of Milinda\")" }],
+    start: -180, end: -10,
+    rulers: [{ name: "Menander I (Milinda)", start: -165, end: -130 }],
+    regions: ["northwest"]
+  },
+  "Kushan Empire": {
+    img: "Gandhara_standing_Buddha.jpg",
+    blurb: "Controlled a huge stretch of the Silk Road, connecting India directly to China, Persia, and Rome. Patronized Gandhara Buddhist art.",
+    capital: "Purushapura (Peshawar)",
+    facts: [
+      "Connected India into Silk Road trade with China, Persia, and Rome",
+      "Convened the Fourth Buddhist Council under Kanishka",
+      "Patronized Gandhara Buddhist art"
+    ],
+    notable: [{ name: "Ashvaghosha", note: "Buddhist philosopher-poet associated with Kanishka's court; author of the Buddhacharita" }],
+    start: 30, end: 375,
+    boundaryImg: "Map of the Kushan Empire.png",
+    rulers: [{ name: "Kanishka the Great", start: 127, end: 150 }],
+    regions: ["northwest", "north"]
+  },
+  "British Raj / East India Company": {
+    img: "Gandhi_at_Dandi,_5_April_1930.jpg",
+    blurb: "Began as a trading company's conquest after Plassey (1757); became direct Crown rule in 1858; ended with Gandhi-led mass campaigns forcing Independence in 1947.",
+    capital: "Calcutta, later New Delhi (from 1911)",
+    facts: [
+      "Began at the Battle of Plassey (1757)",
+      "Direct Crown rule from 1858 after the Revolt of 1857",
+      "Ended with Independence and Partition in 1947"
+    ],
+    notable: [{ name: "Rabindranath Tagore", note: "poet and polymath; first non-European to win the Nobel Prize in Literature (1913)" }],
+    start: 1757, end: 1947,
+    boundaryImg: "British Indian Empire 1909 Imperial Gazetteer of India.jpg",
+    rulers: [
+      { name: "Robert Clive (Company)", start: 1757, end: 1760 },
+      { name: "Crown Rule (Viceroys)", start: 1858, end: 1947 },
+      { name: "Gandhi leads freedom movement", start: 1915, end: 1947, note: "not a ruler — independence leader" }
+    ],
+    regions: ["panIndia"]
+  },
+  "Satavahana Dynasty": {
+    img: "Great_Sanchi_Stupa.jpg",
+    blurb: "Nearly 450 years long — the longest-running dynasty of its era. Controlled lucrative Deccan trade routes and patronized the Amaravati Buddhist art style.",
+    capital: "Pratishthana (Paithan)",
+    facts: [
+      "Nearly 450 years long — longest-running dynasty of its era",
+      "Controlled lucrative Deccan and Indian Ocean trade routes",
+      "Patronized the Amaravati Buddhist art style"
+    ],
+    notable: [{ name: "Hala", note: "an earlier Satavahana king himself credited as compiler of the Gaathasaptashati, a Prakrit poetry anthology" }],
+    start: -230, end: 220,
+    boundaryImg: "Map of the Satavahanas.png",
+    rulers: [{ name: "Gautamiputra Satakarni", start: 106, end: 130 }],
+    regions: ["deccan", "andhra"]
+  },
+  "Vakataka Dynasty": {
+    img: "Ajanta Cave 17 frescoe.jpg",
+    blurb: "A Deccan power that intermarried with the Guptas — Rudrasena II's queen, Prabhavatigupta, was a Gupta princess who later ruled as regent.",
+    capital: "Nandivardhana / Pravarapura",
+    facts: [
+      "Intermarried with the Guptas",
+      "Prabhavatigupta ruled as regent after Rudrasena II's early death",
+      "The finest Ajanta Cave murals were painted under Vakataka patronage (reign of Harishena)"
+    ],
+    start: 250, end: 500,
+    rulers: [{ name: "Rudrasena II", start: 355, end: 380 }],
+    regions: ["deccan"]
+  },
+  "Chalukyas of Badami": {
+    img: "Kailasa_temple_Ellora.jpg",
+    blurb: "Handed the northern emperor Harsha a rare defeat, keeping the Deccan independent of northern control.",
+    capital: "Badami (Vatapi)",
+    facts: [
+      "Handed Harsha a rare defeat, keeping the Deccan independent"
+    ],
+    notable: [{ name: "Ravikirti", note: "court poet who composed the Aihole inscription praising Pulakeshin II's victory over Harsha" }],
+    start: 543, end: 753,
+    rulers: [{ name: "Pulakeshin II", start: 610, end: 642 }],
+    regions: ["deccan", "karnataka"]
+  },
+  "Rashtrakuta Dynasty": {
+    img: "Kailasa_temple_Ellora.jpg",
+    blurb: "Commissioned the Kailasa Temple at Ellora — an entire temple carved downward out of a single rock face, still considered an engineering marvel.",
+    capital: "Manyakheta (Malkhed)",
+    facts: [
+      "Built the Kailasa Temple at Ellora, carved from a single rock face"
+    ],
+    notable: [{ name: "Amoghavarsha I", note: "later Rashtrakuta king (r. 814–878) and author of the Kavirajamarga, the earliest surviving work on Kannada poetics" }],
+    start: 753, end: 982,
+    boundaryImg: "Map of Rashtrakuta Empire around 790 A.D.png",
+    rulers: [{ name: "Krishna I", start: 756, end: 773 }],
+    regions: ["deccan", "karnataka"]
+  },
+  "Western Chalukyas (Kalyani)": {
+    img: "11th century Kasivisvesvara temple, Lakkundi, Karnataka India - 06.jpg",
+    blurb: "Succeeded the Rashtrakutas as the dominant Deccan power for over two centuries.",
+    capital: "Kalyani (Basavakalyan)",
+    facts: [
+      "One of the longest single reigns in Indian history under Vikramaditya VI (1076–1126)",
+      "Constant wars with the Cholas over Vengi (coastal Andhra)"
+    ],
+    notable: [{ name: "Bilhana", note: "Kashmiri poet at Vikramaditya VI's court; author of the Vikramankadevacharita" }],
+    start: 973, end: 1189,
+    rulers: [{ name: "Vikramaditya VI", start: 1076, end: 1126 }],
+    regions: ["karnataka", "deccan"]
+  },
+  "Vijayanagara Empire": {
+    img: "Hampi_chariot.jpg",
+    blurb: "The last great Hindu empire before Mughal dominance. Capital at Hampi; major patron of Telugu and Kannada literature.",
+    capital: "Vijayanagara (Hampi)",
+    facts: [
+      "Last great Hindu empire before Mughal dominance",
+      "Major patron of Telugu and Kannada literature",
+      "Massive temple-building at Hampi"
+    ],
+    notable: [{ name: "Allasani Peddana", note: "\"father of Telugu poetry\"; foremost of Krishnadevaraya's eight court poets (the Ashtadiggajas)" }],
+    start: 1336, end: 1646,
+    boundaryImg: "Vijaynagar Empire map.png",
+    rulers: [{ name: "Krishnadevaraya", start: 1509, end: 1529 }],
+    regions: ["karnataka", "tamil", "andhra"]
+  },
+  "Maratha Empire": {
+    img: "Shivaji_Maharaj_Raigad.jpg",
+    blurb: "Built a formidable hill-fort network and used fast guerrilla tactics against the Mughals; by the 18th century, arguably the strongest single power in India.",
+    capital: "Raigad, later Pune (Peshwa era)",
+    facts: [
+      "Guerrilla-warfare kingdom built on a hill-fort network",
+      "Grew to dominate most of India by the 18th century",
+      "Lost decisively to the British in the Third Anglo-Maratha War (1818)"
+    ],
+    notable: [{ name: "Samarth Ramdas", note: "spiritual guru and advisor to Shivaji" }],
+    start: 1674, end: 1818,
+    boundaryImg: "Map of the Maratha Empire 1760.svg",
+    rulers: [
+      { name: "Shivaji Maharaj", start: 1674, end: 1680 },
+      { name: "Peshwa era (prime ministers)", start: 1713, end: 1818 }
+    ],
+    regions: ["deccan", "gujaratMalwa", "north"]
+  },
+  "Vatsa": {
+    img: "Kosambi ruins.jpg",
+    blurb: "Capital Kaushambi, later a major trading and pilgrimage city for centuries.",
+    capital: "Kaushambi",
+    facts: [
+      "Kaushambi as a major trading and pilgrimage city for centuries after"
+    ],
+    start: -600, end: -450,
+    rulers: [{ name: "Udayana", start: -600, end: -450, note: "semi-legendary, exact dates unknown" }],
+    regions: ["eastGangetic"]
+  },
+  "Pratihara (Gurjara-Pratihara) Dynasty": {
+    img: "Teli Ka Mandir, Gwalior.jpg",
+    blurb: "Brought the empire to its territorial peak under Mihira Bhoja and fought the Tripartite Struggle against the Palas and Rashtrakutas. Earlier Pratihara rulers had halted Arab expansion out of Sindh in the 8th century.",
+    capital: "Kannauj",
+    facts: [
+      "Brought the empire to its territorial peak under Mihira Bhoja",
+      "Fought the decades-long Tripartite Struggle over Kannauj",
+      "Earlier rulers halted Arab expansion out of Sindh in the 8th century"
+    ],
+    start: 730, end: 1036,
+    boundaryImg: "Map of the Gurjara-Pratiharas (circa 800-950 CE).png",
+    rulers: [{ name: "Mihira Bhoja", start: 836, end: 885 }],
+    regions: ["north", "gujaratMalwa"]
+  },
+  "Sikh Empire": {
+    img: "Ranjit_Singh_at_Harmandir_Sahib_-_August_Schoefft_-_Vienna_1850_-_Princess_Bamba_Collection_-_Lahore_Fort.jpg",
+    blurb: "Unified the fractured Sikh misls into one well-organized, modernized state — the last major independent Indian kingdom to fall to the British.",
+    capital: "Lahore",
+    facts: [
+      "Unified the fractured Sikh misls into one modernized state",
+      "Last major independent Indian kingdom to fall to the British"
+    ],
+    notable: [{ name: "Hari Singh Nalwa", note: "Ranjit Singh's most celebrated general, led campaigns into the Khyber Pass region" }],
+    start: 1799, end: 1849,
+    boundaryImg: "Sikh Empire map.png",
+    rulers: [{ name: "Maharaja Ranjit Singh", start: 1801, end: 1839 }],
+    regions: ["northwest"]
+  },
+  "Indo-Scythians (Sakas)": {
+    img: "Junagadh inscription of Rudradaman (complete).jpg",
+    blurb: "Central Asian nomadic warriors ruling western India; the 'Saka Era' calendar, still used in India's official calendar, is named after them.",
+    capital: "Ujjain (Western Satraps)",
+    facts: [
+      "The 'Saka Era' calendar, still used in India's official calendar, is named after them",
+      "Rudradaman I's Junagadh inscription is a landmark early Sanskrit rock edict"
+    ],
+    start: -100, end: 400,
+    rulers: [{ name: "Rudradaman I", start: 130, end: 150 }],
+    regions: ["gujaratMalwa"]
+  },
+  "Pala Dynasty": {
+    img: "Paharpur Buddhist Vihara.jpg",
+    blurb: "Major patrons of Buddhism in Bengal/Bihar; founded Vikramashila, one of medieval India's great universities.",
+    capital: "Pataliputra, later Monghyr/Vikramapura",
+    facts: [
+      "Major patrons of Buddhism in Bengal/Bihar",
+      "Founded Vikramashila, one of medieval India's great universities"
+    ],
+    notable: [{ name: "Atisha Dipankara", note: "Buddhist scholar-monk trained at Pala-patronized Vikramashila; hugely influential in reviving Buddhism in Tibet" }],
+    start: 750, end: 1161,
+    boundaryImg: "Map of the Pala Empire.png",
+    rulers: [{ name: "Dharmapala", start: 770, end: 810 }],
+    regions: ["bengal"]
+  },
+  "Sangam-Age Tamil Kingdoms (Chera, Chola, Pandya)": {
+    img: "Shore_Temple_01.jpg",
+    blurb: "Three simultaneous, constantly warring Tamil kingdoms that produced the Sangam literature and ran an active spice trade with Rome. (Later Pallava/Chola-era temple pictured for context.)",
+    capital: "Vanji (Chera); Uraiyur/Puhar (Chola); Madurai (Pandya)",
+    facts: [
+      "Produced Sangam literature — some of the oldest surviving Tamil poetry",
+      "Ran an active spice trade with Rome (Roman coins found on the Kerala coast)"
+    ],
+    notable: [{ name: "Thiruvalluvar", note: "traditionally placed in the Sangam era; author of the Tirukkural, a foundational Tamil ethical text" }],
+    start: -300, end: 300,
+    rulers: [{ name: "Various Chera, Chola & Pandya kings", start: -300, end: 300, note: "three rival dynasties, not one ruler" }],
+    regions: ["tamil", "kerala"]
+  },
+  "Pallava Dynasty": {
+    img: "Shore_Temple_01.jpg",
+    blurb: "Decisively defeated the Chalukyas and built the rock-cut monuments at Mahabalipuram, including the Shore Temple pictured here.",
+    capital: "Kanchipuram",
+    facts: [
+      "Decisively defeated the Chalukyas",
+      "Built the rock-cut monuments at Mahabalipuram, including the Shore Temple"
+    ],
+    notable: [{ name: "Mahendravarman I", note: "Narasimhavarman's father and predecessor; himself a playwright, wrote the satirical Sanskrit play Mattavilasa Prahasana" }],
+    start: 550, end: 897,
+    boundaryImg: "Map of Pallavas.png",
+    rulers: [{ name: "Narasimhavarman I", start: 630, end: 668 }],
+    regions: ["tamil"]
+  },
+  "Hoysala Dynasty": {
+    img: "Chennakeshava Temple at Belur.jpg",
+    blurb: "Rose as the Chalukyas/Rashtrakutas declined; famous almost entirely for exceptionally intricate temple architecture at Belur and Halebidu.",
+    capital: "Belur, later Halebidu",
+    facts: [
+      "Exceptionally intricate temple architecture at Belur and Halebidu"
+    ],
+    start: 1026, end: 1343,
+    rulers: [{ name: "Vishnuvardhana", start: 1108, end: 1152 }],
+    regions: ["karnataka"]
+  },
+  "Kosala": {
+    img: "Sravasti-citywall.jpg",
+    blurb: "One of the largest and most powerful Mahajanapadas before losing out to Magadha via a marriage-alliance-turned-annexation.",
+    capital: "Shravasti",
+    facts: [
+      "One of the largest and most powerful of the 16 Mahajanapadas before losing out to Magadha",
+      "The Buddha spent much of his teaching life here, based in Shravasti, under King Prasenajit's patronage"
+    ],
+    start: -600, end: -490,
+    rulers: [{ name: "Prasenajit", start: -600, end: -490, note: "approximate; contemporary of the Buddha" }],
+    regions: ["eastGangetic"]
+  },
+  "Chola Empire (Imperial phase)": {
+    img: "Brihadeeswara_Temple_-_Thanjavur.jpg",
+    blurb: "Ran the most powerful navy in Indian history, conquered Sri Lanka, and sent a naval expedition against Srivijaya (modern Indonesia/Malaysia).",
+    capital: "Thanjavur, later Gangaikonda Cholapuram",
+    facts: [
+      "The most powerful navy in Indian history",
+      "Conquered Sri Lanka and raided Srivijaya (modern Indonesia/Malaysia)",
+      "Sophisticated local self-government via village councils"
+    ],
+    notable: [{ name: "Kambar", note: "Tamil poet traditionally associated with the Chola court; author of the Kambaramayanam, a Tamil retelling of the Ramayana" }],
+    start: 848, end: 1279,
+    boundaryImg: "Rajendra map new.png",
+    rulers: [
+      { name: "Raja Raja Chola I", start: 985, end: 1014 },
+      { name: "Rajendra Chola I", start: 1014, end: 1044 }
+    ],
+    regions: ["tamil", "kerala", "andhra"]
+  },
+  "Bahmani Sultanate": {
+    img: "Ashtur Tombs, Bidar, Karnataka.JPG",
+    blurb: "Broke away from the Delhi Sultanate to rule the Deccan; constant rival of Vijayanagara. Later split into five smaller Deccan Sultanates.",
+    capital: "Gulbarga, later Bidar",
+    facts: [
+      "Broke away from the Delhi Sultanate to rule the Deccan independently",
+      "Later fractured into five smaller Deccan Sultanates (including Bijapur and Golconda)"
+    ],
+    notable: [{ name: "Mahmud Gawan", note: "Persian-born prime minister and administrative reformer under the Bahmanis" }],
+    start: 1347, end: 1527,
+    rulers: [{ name: "Ala-ud-Din Bahman Shah", start: 1347, end: 1358 }],
+    regions: ["deccan", "andhra"]
+  },
+  "Avanti": {
+    img: null,
+    blurb: "Controlled key north-south trade routes from its capital, Ujjain, which later became a major center of astronomy and Sanskrit learning.",
+    capital: "Ujjain",
+    facts: [
+      "Controlled key north-south trade routes",
+      "Ujjain's long career afterward as a major center of astronomy and Sanskrit learning"
+    ],
+    start: -600, end: -400,
+    rulers: [{ name: "Pradyota", start: -600, end: -400, note: "approximate" }],
+    regions: ["gujaratMalwa"]
+  }
+};
+
+(function () {
+  var refMap = document.getElementById('refMap');
+  var refLegend = document.getElementById('refLegend');
+  if (!refMap || !refLegend) return;
+  var keys = Object.keys(ZONES).filter(function (k) { return k !== 'panIndia'; });
+  var pinsHtml = '', legendHtml = '';
+  keys.forEach(function (k, i) {
+    var z = ZONES[k];
+    var n = i + 1;
+    var cx = z.left + z.width / 2;
+    var cy = z.top + z.height / 2;
+    pinsHtml += '<div class="map-pin" style="left:' + cx + '%; top:' + cy + '%;" title="' + z.label + '">' + n + '</div>';
+    legendHtml += '<li><span class="num">' + n + '</span>' + z.label + '</li>';
+  });
+  refMap.insertAdjacentHTML('beforeend', pinsHtml);
+  refLegend.insertAdjacentHTML('beforeend', legendHtml);
+})();
+
+(function () {
+  var tooltip = document.getElementById('tooltip');
+  var bars = document.querySelectorAll('.bar[data-name]');
+  var lastX = 0, lastY = 0;
+
+  function yearLabel(y) {
+    return y < 0 ? Math.abs(y) + ' BCE' : y + ' CE';
+  }
+
+  function renderRulers(entry, color) {
+    if (!entry.rulers || entry.rulers.length === 0) {
+      return '<div class="tt-no-rulers">No named rulers survive for this period.</div>';
+    }
+    var span = entry.end - entry.start;
+    var track = entry.rulers.map(function (r) {
+      var left = ((r.start - entry.start) / span) * 100;
+      var width = Math.max(((r.end - r.start) / span) * 100, 1.2);
+      return '<div class="tt-seg" style="left:' + left + '%; width:' + width + '%; background:' + color + '" title="' + r.name + '"></div>';
+    }).join('');
+    var list = entry.rulers.map(function (r) {
+      return '<div class="tt-ruler-row">' +
+        '<span class="tt-ruler-dot" style="background:' + color + '"></span>' +
+        '<span class="tt-ruler-name">' + r.name + '</span>' +
+        '<span class="tt-ruler-yrs">' + yearLabel(r.start) + '–' + yearLabel(r.end) + '</span>' +
+        '</div>' + (r.note ? '<div style="font-size:0.68rem; color:var(--text-muted); margin:-2px 0 2px 14px;">' + r.note + '</div>' : '');
+    }).join('');
+    return '<div class="tt-track">' + track + '</div><div class="tt-ruler-list">' + list + '</div>';
+  }
+
+  function showTooltip(el, x, y) {
+    var name = el.getAttribute('data-name');
+    var dates = el.getAttribute('data-dates');
+    var color = getComputedStyle(el).backgroundColor;
+    var entry = EMPIRE_DATA[name];
+    var imgHtml = '';
+    var blurbHtml = '';
+    var rulersHtml = '';
+    var mapHtml = '';
+    var capitalHtml = '';
+    var factsHtml = '';
+    if (entry) {
+      if (entry.img) {
+        imgHtml = '<img class="tt-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(entry.img) + '?width=360" alt="' + name + '" loading="eager">';
+      }
+      blurbHtml = '<div class="tt-blurb">' + entry.blurb + '</div>';
+      if (entry.capital) {
+        capitalHtml = '<div class="tt-capital"><b>Capital:</b> ' + entry.capital + '</div>';
+      }
+      if (entry.facts && entry.facts.length) {
+        factsHtml = '<div class="tt-section-label">Famous for</div><ul class="tt-facts">' +
+          entry.facts.map(function (f) { return '<li>' + f + '</li>'; }).join('') + '</ul>';
+      }
+      if (entry.notable && entry.notable.length) {
+        factsHtml += '<div class="tt-section-label">Notable figures (non-ruler)</div><ul class="tt-notable">' +
+          entry.notable.map(function (n) { return '<li><b>' + n.name + '</b> — ' + n.note + '</li>'; }).join('') + '</ul>';
+      }
+      rulersHtml = '<div class="tt-section-label">Rulers</div>' + renderRulers(entry, color);
+      if (entry.boundaryImg) {
+        mapHtml = '<div class="tt-section-label">Where — historical extent map</div>' +
+          '<img class="tt-boundary-img" src="https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(entry.boundaryImg) + '?width=280" alt="Historical extent map of ' + name + '" loading="eager">' +
+          '<div class="tt-map-cap">Sourced historical map · <a href="https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(entry.boundaryImg) + '" target="_blank" rel="noopener">Wikimedia Commons</a></div>';
+      } else {
+        mapHtml = '<div class="tt-section-label">Where — approximate region</div>' + renderMap(entry, color, 220);
+      }
+    }
+    tooltip.innerHTML =
+      '<div class="tt-layout" style="border-left-color:' + color + '">' +
+      '<div class="tt-left">' +
+      '<div class="tt-title">' + name + '</div>' +
+      '<div class="tt-dates">' + dates + '</div>' +
+      capitalHtml +
+      blurbHtml +
+      factsHtml +
+      rulersHtml +
+      '</div>' +
+      '<div class="tt-right">' + imgHtml + mapHtml + '</div>' +
+      '</div>';
+    lastX = x; lastY = y;
+    positionTooltip(x, y);
+    tooltip.classList.add('visible');
+    // images (empire photo + map) load async and can grow the box taller than
+    // the viewport allows — reposition once each finishes loading.
+    tooltip.querySelectorAll('img').forEach(function (img) {
+      if (img.complete) return;
+      img.addEventListener('load', function () { positionTooltip(lastX, lastY); }, { once: true });
+    });
+  }
+
+  function positionTooltip(x, y) {
+    var pad = 16;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var rect = tooltip.getBoundingClientRect();
+    var left = x + pad;
+    var top = y + pad;
+    if (left + rect.width > vw - 8) left = x - rect.width - pad;
+    if (top + rect.height > vh - 8) top = vh - rect.height - 8;
+    if (left < 8) left = 8;
+    if (top < 8) top = 8;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+
+  function hideTooltip() {
+    tooltip.classList.remove('visible');
+  }
+
+  // When the page (or the horizontally-scrollable Gantt) is scrolled with the
+  // cursor resting over the bars, they slide underneath it, firing a rapid
+  // mouseenter/mouseleave STORM — each one used to rebuild the whole tooltip
+  // (incl. new <img> fetches), which is what caused the scroll stutter.
+  //
+  // Tying suppression to plain 'scroll' events was tried and reverted: a single,
+  // one-off scroll — e.g. the browser auto-scrolling a bar into view right before
+  // an ordinary hover or keyboard focus — fired the same 'scroll' event a real
+  // multi-tick scroll gesture does, so it blocked completely normal single hovers
+  // for the length of the whole debounce window.
+  //
+  // Instead, detect the actual storm pattern directly: 3+ mouseenters across
+  // *different* bars within a 200ms window is a hit-test storm, not a person
+  // deliberately hovering one bar. A single incidental scroll-into-view only
+  // ever produces one mouseenter, so it never trips this and normal hovers stay
+  // instant; only a genuine scroll-under-cursor gesture engages the guard.
+  var ganttEl = document.querySelector('.gantt');
+  var recentEnters = []; // {time, x, y}
+  var stormActive = false;
+  var stormReleaseTimer = null;
+
+  // A scroll-under-a-stationary-cursor storm and a person quickly sweeping the
+  // mouse across several tightly-packed bars both fire 3+ mouseenters within
+  // ~200ms — that count alone can't tell them apart, and treating a fast sweep
+  // as a storm was blocking completely ordinary mouse movement. The real
+  // difference: during a scroll storm the cursor's screen (x,y) barely moves
+  // (only the content slides under it); during a deliberate sweep it moves
+  // substantially between entries. Only flag it as a storm when both are true.
+  function noteEnterIsStorm(x, y) {
+    var now = Date.now();
+    recentEnters.push({ time: now, x: x, y: y });
+    recentEnters = recentEnters.filter(function (e) { return now - e.time < 200; });
+    if (recentEnters.length < 3) return false;
+    var first = recentEnters[0];
+    return recentEnters.every(function (e) {
+      return Math.abs(e.x - first.x) < 4 && Math.abs(e.y - first.y) < 4;
+    });
+  }
+
+  document.addEventListener('mousemove', function (e) {
+    lastX = e.clientX; lastY = e.clientY;
+  }, { passive: true });
+
+  function releaseStorm() {
+    stormActive = false;
+    if (ganttEl) ganttEl.classList.remove('is-scrolling');
+    var el = document.elementFromPoint(lastX, lastY);
+    var barEl = el && el.closest && el.closest('.bar[data-name]');
+    if (barEl) showTooltip(barEl, lastX, lastY);
+  }
+
+  function engageOrExtendStorm() {
+    // Hide exactly once, right as a genuine storm is first detected — not on
+    // every harmless scroll tick. A one-off scroll (e.g. the browser
+    // auto-scrolling a bar into view before an ordinary hover) never reaches
+    // here at all, so it's untouched; natural mouseleave already hides the
+    // tooltip in the common case of a bar scrolling out from under the cursor.
+    if (!stormActive) hideTooltip();
+    stormActive = true;
+    if (ganttEl) ganttEl.classList.add('is-scrolling'); // -> pointer-events:none on bars, stops the storm at the source
+    if (stormReleaseTimer) clearTimeout(stormReleaseTimer);
+    stormReleaseTimer = setTimeout(releaseStorm, 300);
+  }
+
+  // A scroll event by itself never engages the guard (that's the storm
+  // detector's job, based on actual mouseenter behavior) — it only extends an
+  // already-active storm, so a genuinely continuous scroll gesture doesn't
+  // release suppression mid-way through.
+  function onScrollActivity() {
+    if (stormActive) engageOrExtendStorm();
+  }
+  window.addEventListener('scroll', onScrollActivity, { passive: true });
+  var scrollableGantt = document.querySelector('.gantt-scroll');
+  if (scrollableGantt) scrollableGantt.addEventListener('scroll', onScrollActivity, { passive: true });
+
+  bars.forEach(function (bar) {
+    bar.addEventListener('mouseenter', function (e) {
+      if (noteEnterIsStorm(e.clientX, e.clientY)) {
+        engageOrExtendStorm();
+        return;
+      }
+      showTooltip(bar, e.clientX, e.clientY);
+    });
+    bar.addEventListener('mousemove', function (e) {
+      lastX = e.clientX; lastY = e.clientY;
+      positionTooltip(e.clientX, e.clientY);
+    });
+    bar.addEventListener('mouseleave', hideTooltip);
+    // keyboard accessibility: focus/blur mirrors hover
+    bar.addEventListener('focus', function () {
+      var rect = bar.getBoundingClientRect();
+      showTooltip(bar, rect.right, rect.top);
+    });
+    bar.addEventListener('blur', hideTooltip);
+  });
+})();
+</script>
+</body>
+</html>

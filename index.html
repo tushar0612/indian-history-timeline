@@ -242,14 +242,21 @@
   #tooltip .tt-map-wrap { width: 220px; }
   #tooltip .tt-map-wrap .india-map-img { width: 220px; }
 
-  /* era hero images */
+  /* era hero images — fixed height + object-fit:cover so every era-hero photo
+     and every kcard inline photo renders at the same visual size regardless
+     of its source image's natural aspect ratio (previously only width was
+     constrained, so a tall source photo and a wide one displayed at very
+     different heights next to each other). */
   .era-image {
     display: block;
     width: 100%;
     max-width: 420px;
+    height: 220px;
+    object-fit: cover;
     border-radius: 8px;
     margin: 10px 0 18px;
     border: 1px solid var(--border);
+    background: var(--gridline);
   }
   .era-image-wrap { margin: 10px 0 18px; }
   .era-image-cap { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
@@ -852,7 +859,7 @@ var EMPIRE_DATA = {
     regions: ["north"]
   },
   "Later Vedic Janapadas (Videha, Kosala)": {
-    img: null,
+    img: "Painted Grey Ware - Sonkh - 1000-600 BCE - Showcase 6-15 - Prehistory and Terracotta Gallery - Government Museum - Mathura 2013-02-24 6461.JPG",
     blurb: "Tribal chiefdoms harden into territorial kingdoms (Janapadas). Philosophical debate in courts like Videha's fed directly into the Upanishads.",
     capital: "Mithila (Videha); Ayodhya (Kosala)",
     facts: [
@@ -939,7 +946,7 @@ var EMPIRE_DATA = {
     regions: ["north", "eastGangetic"]
   },
   "Kanva Dynasty": {
-    img: null,
+    img: "Coin of the Kanva King, Bhumimitra, Private collection.jpg",
     blurb: "A brief successor dynasty to the Shungas in north India, before the region fragmented further.",
     capital: "Pataliputra (nominal)",
     facts: [
@@ -1327,7 +1334,7 @@ var EMPIRE_DATA = {
     regions: ["deccan", "andhra"]
   },
   "Avanti": {
-    img: null,
+    img: "A copper uninscribed coin of Ujjayini.jpg",
     blurb: "Controlled key north-south trade routes from its capital, Ujjain, which later became a major center of astronomy and Sanskrit learning.",
     capital: "Ujjain",
     facts: [
